@@ -1,6 +1,6 @@
 # pr2ds
 
-Panaderia
+Una panadería muy maja en la que se venden barras y cestas. :D
 
 ## Getting Started
 
