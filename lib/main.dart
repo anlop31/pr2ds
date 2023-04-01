@@ -3,9 +3,41 @@ import 'package:flutter/material.dart';
 import 'Panaderia.dart';
 import 'Encargado.dart';
 import 'Analista.dart';
+import 'dart:async';
 
-void main() {
+Future<void> main() async{
+  // Observadores
+  Encargado encargado = new Encargado();
+  Analista analista = new Analista();
 
+  // Observable y completer
+  Future<Panaderia> futurePanaderia = Future(() => Panaderia());
+  Panaderia panaderia = await futurePanaderia;
+  panaderia.inicializarProductos();
+  Completer completer = Completer();
+
+  // añadimos los observadores a la panaderia
+  panaderia.addObserver(analista);
+  panaderia.addObserver(encargado);
+
+  // Función que marca la panadería como cerrada
+  void marcarPanaderiaCerrada() {
+    print('La panadería ha cerrado');
+    completer.complete(); // Completar el futuro
+  }
+
+  // Configurar un temporizador para marcar un tiempo límite para la panadería
+  Timer(Duration(seconds: 40), marcarPanaderiaCerrada);
+
+  // Ejecutar un proceso mientras la instancia de Future esté activa
+  do {
+    await panaderia.run();
+    encargado.update(panaderia);
+
+    // Comprobar si el futuro ha sido completado y si la panadería sigue abierta
+    //print((await futurePanaderia).estaAbierta());
+  } while (!completer.isCompleted && (await futurePanaderia).estaAbierta());
+  //print("Ha salido del bucle");
 
 
   runApp(const MyApp());
@@ -55,27 +87,65 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _counterPanes = 0;
+  int _counterCestas = 0;
+  double _precioPan = 0.70;
+  double _precioCesta = 3.5;
+  double _totalPanes = 0;
+  double _totalCestas = 0;
+  double _dinero = 50;
+  double _stockPanes = 10;
+  double _stockCestas = 10;
 
-  void _incrementCounter() {
+  void _incrementCounterPanes() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      if (_counterPanes < _stockPanes && (_dinero - _precioPan) > 0) {
+        _counterPanes++;
+        _totalPanes = _totalPanes + _precioPan;
+        _dinero = _dinero - _precioPan;
+      }
     });
   }
-  void _decrementCounter() {
+  void _decrementCounterPanes() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter--;
+      if (_counterPanes > 0) {
+        _counterPanes--;
+        _totalPanes = _totalPanes - _precioPan;
+        _dinero = _dinero + _precioPan;
+      }
     });
+  }
+
+  void _incrementCounterCestas() {
+    setState(() {
+      if (_counterCestas < _stockCestas && (_dinero - _precioCesta) > 0) {
+        _counterCestas++;
+        _totalCestas = _totalCestas + _precioCesta;
+        _dinero = _dinero - _precioCesta;
+      }
+    });
+  }
+  void _decrementCounterCestas() {
+    setState(() {
+      if (_counterCestas > 0) {
+        _counterCestas--;
+        _totalCestas = _totalCestas - _precioCesta;
+        _dinero = _dinero + _precioCesta;
+      }
+    });
+  }
+
+  void _updateStockPanes(){
+    print("hola");
+    _stockPanes = _stockPanes - _counterPanes;
+    _counterPanes = 0;
+    _totalPanes = 0;
+  }
+
+  void _updateStockCestas(){
+    _stockCestas = _stockCestas - _counterCestas;
+    _counterCestas = 0;
+    _totalCestas = 0;
   }
 
   @override
@@ -95,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(
               children: [
                 Text(
-                  'Stock panes: ' + _counter.toString(),
+                  'Stock panes: ' + _stockPanes.toString(),
                   style: TextStyle(
                     fontSize: 30.0,
                   ),
@@ -111,16 +181,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       SizedBox(width: 15),
                       FloatingActionButton(
-                        onPressed: _decrementCounter,
+                        onPressed: _decrementCounterPanes,
                         child: Icon(Icons.remove),
                       ),
                       SizedBox(width: 15),
                       Text(
-                        _counter.toString(),
+                        _counterPanes.toString(),
                       ),
                       SizedBox(width: 15),
                       FloatingActionButton(
-                        onPressed: _incrementCounter,
+                        onPressed: _incrementCounterPanes,
                         child: Icon(Icons.add),
                       )
                     ],
@@ -128,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _counter.toString() + '€',
+                  'Total euros: ' + _totalPanes.toString() + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -139,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(
               children: [
                 Text(
-                  'Stock cestas: ' + _counter.toString(),
+                  'Stock cestas: ' + _stockCestas.toString(),
                   style: TextStyle(
                     fontSize: 30.0,
                   ),
@@ -154,16 +224,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       SizedBox(width: 15),
                       FloatingActionButton(
-                        onPressed: _decrementCounter,
+                        onPressed: _decrementCounterCestas,
                         child: Icon(Icons.remove),
                       ),
                       SizedBox(width: 15),
                       Text(
-                        _counter.toString(),
+                        _counterCestas.toString(),
                       ),
                       SizedBox(width: 15),
                       FloatingActionButton(
-                        onPressed: _incrementCounter,
+                        onPressed: _incrementCounterCestas,
                         child: Icon(Icons.add),
                       )
                     ],
@@ -171,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _counter.toString() + '€',
+                  'Total euros: ' + _totalCestas.toString() + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -180,23 +250,21 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Row(
               children: [
-                SizedBox(width: 20,),
+                SizedBox(width: 50,),
                 Text(
-                  'Dinero: ' + _counter.toString(),
+                  'Dinero: ' + _dinero.toString(),
                 ),
                 SizedBox(width: 50,),
-                RaisedButton(
-                  onPressed: _incrementCounter,
-                  child: Text('Comprar'),
-                ),
-                FloatingActionButton(
+                ElevatedButton(
                   onPressed: () {
+                    _updateStockPanes();
+                    _updateStockCestas();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SecondScreen()),
                     );
                   },
-                  child: Icon(Icons.arrow_forward),
+                  child: Text('Comprar'),
                 ),
               ],
             ),
