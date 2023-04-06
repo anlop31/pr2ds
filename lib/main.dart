@@ -91,17 +91,27 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counterCestas = 0;
   double _precioPan = 0.70;
   double _precioCesta = 3.5;
-  double _totalPanes = 0;
-  double _totalCestas = 0;
-  double _dinero = 50;
+  double _totalPrecioPanes = 0; // dinero a gastar en panes
+  double _totalPrecioCestas = 0; // dinero a gastar en cestas
+  double _dinero = 50; // dinero del que dispone el cliente
   double _stockPanes = 10;
   double _stockCestas = 10;
+  double _stockPanesInicial = 10;
+  double _stockCestasInicial = 10;
+
+  Encargado encargado = new Encargado();
+  Analista analista = new Analista();
+  Panaderia panaderia = new Panaderia();
+
+  _MyHomePageState(){
+    panaderia.inicializarProductos();
+  }
 
   void _incrementCounterPanes() {
     setState(() {
       if (_counterPanes < _stockPanes && (_dinero - _precioPan) > 0) {
         _counterPanes++;
-        _totalPanes = _totalPanes + _precioPan;
+        _totalPrecioPanes = _totalPrecioPanes + _precioPan;
         _dinero = _dinero - _precioPan;
       }
     });
@@ -110,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (_counterPanes > 0) {
         _counterPanes--;
-        _totalPanes = _totalPanes - _precioPan;
+        _totalPrecioPanes = _totalPrecioPanes - _precioPan;
         _dinero = _dinero + _precioPan;
       }
     });
@@ -120,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (_counterCestas < _stockCestas && (_dinero - _precioCesta) > 0) {
         _counterCestas++;
-        _totalCestas = _totalCestas + _precioCesta;
+        _totalPrecioCestas = _totalPrecioCestas + _precioCesta;
         _dinero = _dinero - _precioCesta;
       }
     });
@@ -129,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (_counterCestas > 0) {
         _counterCestas--;
-        _totalCestas = _totalCestas - _precioCesta;
+        _totalPrecioCestas = _totalPrecioCestas - _precioCesta;
         _dinero = _dinero + _precioCesta;
       }
     });
@@ -139,13 +149,50 @@ class _MyHomePageState extends State<MyHomePage> {
     print("hola");
     _stockPanes = _stockPanes - _counterPanes;
     _counterPanes = 0;
-    _totalPanes = 0;
+    _totalPrecioPanes = 0;
+
+    panaderia.venderSimple(_counterPanes);
+    encargado.update(panaderia);
   }
 
   void _updateStockCestas(){
     _stockCestas = _stockCestas - _counterCestas;
     _counterCestas = 0;
-    _totalCestas = 0;
+    _totalPrecioCestas = 0;
+
+    panaderia.venderCompuesto(_counterCestas);
+    encargado.update(panaderia);
+  }
+
+  double getStockPanes(){
+    return _stockPanes;
+  }
+
+  double getStockCestas(){
+    return _stockCestas;
+  }
+
+  double getStockInicialPanes(){
+    return _stockPanesInicial;
+  }
+
+  double getStockInicialCestas(){
+    return _stockCestasInicial;
+  }
+
+  int getStockPanesEncargado(){
+    return encargado.getNSimples();
+  }
+  int getStockCestasEncargado(){
+    return encargado.getNSimples();
+  }
+
+  int getPanesPanaderia(){
+    return panaderia.getNSimples();
+  }
+
+  int getCestasPanaderia(){
+    return panaderia.getNCompuestos();
   }
 
   @override
@@ -198,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _totalPanes.toString() + '€',
+                  'Total euros: ' + _totalPrecioPanes.toString() + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -241,7 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _totalCestas.toString() + '€',
+                  'Total euros: ' + _totalPrecioCestas.toString() + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -261,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _updateStockCestas();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondScreen()),
+                      MaterialPageRoute(builder: (context) => SecondScreen(myHome: this)),
                     );
                   },
                   child: Text('Comprar'),
@@ -280,14 +327,47 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SecondScreen extends StatelessWidget {
+  final _MyHomePageState myHome;
+  // final double stockPanes;
+
+  SecondScreen({required this.myHome});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Segunda pantalla'),
+        title: Text('Ventas'),
       ),
       body: Center(
-        child: Text('Estás en la segunda pantalla'),
+        child: Column(
+          children: [
+            SizedBox(height: 300,),
+            Text(
+              'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+            ),
+            Text(
+              'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+            ),
+            Text(
+              'Panes vendidos del encargado: ' + ( myHome.getStockPanesEncargado() ).toString()
+            ),
+            Text(
+                'Cestas vendidas del encargado: ' + ( myHome.getStockCestasEncargado() ).toString()
+            ),
+            Text(
+                'Stock panes panaderia: ' + ( myHome.getPanesPanaderia() ).toString()
+            ),
+            Text(
+                'Stock cestas panaderia: ' + ( myHome.getCestasPanaderia() ).toString()
+            ),
+          ],
+        ),
       ),
     );
   }
