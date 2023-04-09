@@ -105,6 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _MyHomePageState(){
     panaderia.inicializarProductos();
+    _stockPanes = panaderia.getNSimples().toDouble();
+    _stockCestas = panaderia.getNCompuestos().toDouble();
   }
 
   void _incrementCounterPanes() {
@@ -147,21 +149,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _updateStockPanes(){
     print("hola");
-    _stockPanes = _stockPanes - _counterPanes;
-    _counterPanes = 0;
-    _totalPrecioPanes = 0;
+    setState(() {
+      _stockPanes = _stockPanes - _counterPanes;
+      _counterPanes = 0;
+      _totalPrecioPanes = 0;
 
-    panaderia.venderSimple(_counterPanes);
-    encargado.update(panaderia);
+      panaderia.venderSimple(_counterPanes);
+      encargado.update(panaderia);
+    });
   }
 
   void _updateStockCestas(){
-    _stockCestas = _stockCestas - _counterCestas;
-    _counterCestas = 0;
-    _totalPrecioCestas = 0;
+    setState(() {
+      _stockCestas = _stockCestas - _counterCestas;
+      _counterCestas = 0;
+      _totalPrecioCestas = 0;
 
-    panaderia.venderCompuesto(_counterCestas);
-    encargado.update(panaderia);
+      panaderia.venderCompuesto(_counterCestas);
+      encargado.update(panaderia);
+    });
   }
 
   double getStockPanes(){
@@ -184,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return encargado.getNSimples();
   }
   int getStockCestasEncargado(){
-    return encargado.getNSimples();
+    return encargado.getNCompuestos();
   }
 
   int getPanesPanaderia(){
@@ -365,17 +371,25 @@ class SecondScreen extends StatelessWidget {
             ),
             SizedBox(height: 30,),
             Text(
-              'Panes vendidos del encargado: ' + ( myHome.getStockPanesEncargado() ).toString(),
+              'Stock panes según el encargado: ' + ( myHome.getStockPanesEncargado() ).toString(),
               style: TextStyle(
                 fontSize: 20.0,
               ),
             ),
             Text(
-              'Cestas vendidas del encargado: ' + ( myHome.getStockCestasEncargado() ).toString(),
+              'Stock cestas según el encargado: ' + ( myHome.getStockCestasEncargado() ).toString(),
               style: TextStyle(
                 fontSize: 20.0,
               ),
             ),
+            SizedBox(height: 30,),
+            Text(
+              "Panaderia:",
+              style: TextStyle(
+                fontSize: 30.0,
+              ),
+            ),
+            SizedBox(height: 30,),
             Text(
               'Stock panes panaderia: ' + ( myHome.getPanesPanaderia() ).toString(),
               style: TextStyle(
