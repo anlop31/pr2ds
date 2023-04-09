@@ -30,13 +30,13 @@ Future<void> main() async{
   Timer(Duration(seconds: 40), marcarPanaderiaCerrada);
 
   // Ejecutar un proceso mientras la instancia de Future esté activa
-  do {
-    await panaderia.run();
-    encargado.update(panaderia);
+  //do {
+    //await panaderia.run();
+    //encargado.update(panaderia);
 
     // Comprobar si el futuro ha sido completado y si la panadería sigue abierta
     //print((await futurePanaderia).estaAbierta());
-  } while (!completer.isCompleted && (await futurePanaderia).estaAbierta());
+  //} while (!completer.isCompleted && (await futurePanaderia).estaAbierta());
   //print("Ha salido del bucle");
 
 
@@ -245,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _totalPrecioPanes.toString() + '€',
+                  'Total euros: ' + _totalPrecioPanes.toStringAsFixed(2) + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -288,7 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 15,),
                 Text(
-                  'Total euros: ' + _totalPrecioCestas.toString() + '€',
+                  'Total euros: ' + _totalPrecioCestas.toStringAsFixed(2) + '€',
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -299,13 +299,15 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 SizedBox(width: 50,),
                 Text(
-                  'Dinero: ' + _dinero.toString(),
+                  'Dinero: ' + _dinero.toStringAsFixed(2),
                 ),
                 SizedBox(width: 50,),
                 ElevatedButton(
                   onPressed: () {
-                    _updateStockPanes();
-                    _updateStockCestas();
+                    setState((){
+                      _updateStockPanes();
+                      _updateStockCestas();
+                    });
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SecondScreen(myHome: this)),
@@ -341,7 +343,7 @@ class SecondScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 300,),
+            SizedBox(height: 220,),
             Text(
               'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
               style: TextStyle(
@@ -354,17 +356,37 @@ class SecondScreen extends StatelessWidget {
                 fontSize: 20.0,
               ),
             ),
+            SizedBox(height: 60,),
             Text(
-              'Panes vendidos del encargado: ' + ( myHome.getStockPanesEncargado() ).toString()
+              "Encargado:",
+              style: TextStyle(
+                fontSize: 30.0,
+              ),
+            ),
+            SizedBox(height: 30,),
+            Text(
+              'Panes vendidos del encargado: ' + ( myHome.getStockPanesEncargado() ).toString(),
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
             ),
             Text(
-                'Cestas vendidas del encargado: ' + ( myHome.getStockCestasEncargado() ).toString()
+              'Cestas vendidas del encargado: ' + ( myHome.getStockCestasEncargado() ).toString(),
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
             ),
             Text(
-                'Stock panes panaderia: ' + ( myHome.getPanesPanaderia() ).toString()
+              'Stock panes panaderia: ' + ( myHome.getPanesPanaderia() ).toString(),
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
             ),
             Text(
-                'Stock cestas panaderia: ' + ( myHome.getCestasPanaderia() ).toString()
+              'Stock cestas panaderia: ' + ( myHome.getCestasPanaderia() ).toString(),
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
             ),
           ],
         ),
