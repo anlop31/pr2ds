@@ -31,11 +31,11 @@ Future<void> main() async{
 
   // Ejecutar un proceso mientras la instancia de Future esté activa
   //do {
-    //await panaderia.run();
-    //encargado.update(panaderia);
+  //await panaderia.run();
+  //encargado.update(panaderia);
 
-    // Comprobar si el futuro ha sido completado y si la panadería sigue abierta
-    //print((await futurePanaderia).estaAbierta());
+  // Comprobar si el futuro ha sido completado y si la panadería sigue abierta
+  //print((await futurePanaderia).estaAbierta());
   //} while (!completer.isCompleted && (await futurePanaderia).estaAbierta());
   //print("Ha salido del bucle");
 
@@ -201,6 +201,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return panaderia.getNCompuestos();
   }
 
+  int getVentasDia(int dia){
+    return analista.getVentasDia(dia);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -334,22 +339,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
 }
 
+
+
 class SecondScreen extends StatelessWidget {
+
   final _MyHomePageState myHome;
   // final double stockPanes;
 
   SecondScreen({required this.myHome});
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ventas'),
+        title: Text('SecondScreen'),
       ),
-      body: Center(
-        child: Column(
+      body: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child:
+        Column(
           children: [
-            SizedBox(height: 220,),
+            SizedBox(height: 70,),
             Text(
               'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
               style: TextStyle(
@@ -357,7 +368,7 @@ class SecondScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
+              'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
               style: TextStyle(
                 fontSize: 20.0,
               ),
@@ -401,6 +412,156 @@ class SecondScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20.0,
               ),
+            ),
+            SizedBox(height: 30,),
+            Text(
+              'Analista: ',
+              style: TextStyle(
+                fontSize: 30.0,
+              ),
+            ),
+            SizedBox(height: 30,),
+            Table(
+              border: TableBorder.all(),
+              children: [
+                TableRow(
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('L',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('M',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('X',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('J',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('V',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('S',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text('D',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(myHome.getVentasDia(0).toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(myHome.getVentasDia(1).toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(myHome.getVentasDia(2).toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(myHome.getVentasDia(3).toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child:
+                          Text(myHome.getVentasDia(4).toString(),
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child:
+                          Text(myHome.getVentasDia(5).toString(),
+                            style: TextStyle(
+                              fontSize: 20.0,
+                            ),),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child:
+                          Text(myHome.getVentasDia(6).toString(),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
