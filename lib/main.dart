@@ -98,6 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double _stockCestas = 10;
   double _stockPanesInicial = 10;
   double _stockCestasInicial = 10;
+  int _vendidosPan = 0;
+  int _vendidosCesta = 0;
 
   Encargado encargado = new Encargado();
   Analista analista = new Analista();
@@ -148,8 +150,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateStockPanes(){
-    print("hola");
+    //print("hola");
     setState(() {
+      _vendidosPan = _vendidosPan + _counterPanes;
+      panaderia.venderProducto(0, _counterPanes);
+
       _stockPanes = _stockPanes - _counterPanes;
       _counterPanes = 0;
       _totalPrecioPanes = 0;
@@ -161,6 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _updateStockCestas(){
     setState(() {
+      _vendidosCesta = _vendidosCesta + _counterCestas;
+      panaderia.venderProducto(1, _counterCestas);
+
       _stockCestas = _stockCestas - _counterCestas;
       _counterCestas = 0;
       _totalPrecioCestas = 0;
@@ -203,6 +211,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int getVentasDia(int dia){
     return analista.getVentasDia(dia);
+  }
+
+  int getVendidosPan(){
+    return _vendidosPan;
+  }
+
+  int getVendidosCesta(){
+    return _vendidosCesta;
   }
 
 
@@ -360,20 +376,22 @@ class SecondScreen extends StatelessWidget {
       child:
         Column(
           children: [
-            SizedBox(height: 70,),
+            SizedBox(height: 100,),
             Text(
-              'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
+              //'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
+              'Se han vendido: ' + myHome.getVendidosPan().toString() + ' panes.',
               style: TextStyle(
                 fontSize: 20.0,
               ),
             ),
             Text(
-              'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
+              //'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
+              'Se han vendido: ' + myHome.getVendidosCesta().toString() + ' cestas.',
               style: TextStyle(
                 fontSize: 20.0,
               ),
             ),
-            SizedBox(height: 60,),
+            SizedBox(height: 80,),
             Text(
               "Encargado:",
               style: TextStyle(
@@ -393,8 +411,8 @@ class SecondScreen extends StatelessWidget {
                 fontSize: 20.0,
               ),
             ),
-            SizedBox(height: 30,),
-            Text(
+            SizedBox(height: 80,),
+           /* Text(
               "Panaderia:",
               style: TextStyle(
                 fontSize: 30.0,
@@ -413,7 +431,7 @@ class SecondScreen extends StatelessWidget {
                 fontSize: 20.0,
               ),
             ),
-            SizedBox(height: 30,),
+            SizedBox(height: 30,),*/
             Text(
               'Analista: ',
               style: TextStyle(
