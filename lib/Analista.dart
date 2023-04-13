@@ -52,34 +52,17 @@ class Analista extends Observer<Panaderia> {
     panaderia.setCompuestosVendidos(compuestosVendidos);
 
     _suma = 0;
-    int vendidos = (_nSimples+_nCompuestos) - ( panaderia.getNSimples()+panaderia.getNCompuestos() );
+    //int vendidos = (_nSimples+_nCompuestos) - ( panaderia.getNSimples()+panaderia.getNCompuestos() );
+    //int vendidos = (o as Panaderia).getUltimaVenta();
+    int vendidos = (o as Panaderia).getUltimaVentaPanes() + (o as Panaderia).getUltimaVentaCestas();
 
-
-    if(_dia_semana < 7){
+    //if(_dia_semana < 7){
       if (_contador == 0){
         _contador = _contador + 1;
       }
-      else if(_contador == 4){
-        _contador = 1;
-
-        for(int i=0; i<3; i++){
-          _suma = _suma + _ventasDia[i];
-          print("suma: " + _suma.toString() + " ventasDia.get(" + i.toString() + "):" + _ventasDia[i].toString());
-        }
-
-        _ventasTotales[_dia_semana] = _suma;
-
-        // print dia semana con ventas y contador
-
-        _dia_semana = _dia_semana + 1;
-
-        _ventasDia.clear();
-        _ventasDia.add(vendidos);
-      }
       else{
-        // print dia semana con contador
-        _ventasDia.add(vendidos);
-        _contador = _contador + 1;
+        _ventasTotales[_dia_semana] = vendidos;
+        _dia_semana++;
       }
 
       _nSimples = panaderia.getNSimples();
@@ -92,11 +75,15 @@ class Analista extends Observer<Panaderia> {
 
       print(_mensajeSimples);
       print(_mensajeCompuestos);
-    }
+    //}
   }
 
   int getVentasDia(int dia){
     return (_ventasTotales[dia]);
+  }
+
+  List<int> getVentasTotales(){
+    return _ventasTotales;
   }
 
   String getStock(){

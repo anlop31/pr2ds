@@ -109,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     panaderia.inicializarProductos();
     _stockPanes = panaderia.getNSimples().toDouble();
     _stockCestas = panaderia.getNCompuestos().toDouble();
+    analista.update(panaderia);
   }
 
   void _incrementCounterPanes() {
@@ -159,8 +160,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _counterPanes = 0;
       _totalPrecioPanes = 0;
 
-      panaderia.venderSimple(_counterPanes);
+      //panaderia.venderSimple(_counterPanes);
       encargado.update(panaderia);
+      analista.update(panaderia);
     });
   }
 
@@ -173,10 +175,37 @@ class _MyHomePageState extends State<MyHomePage> {
       _counterCestas = 0;
       _totalPrecioCestas = 0;
 
-      panaderia.venderCompuesto(_counterCestas);
+      //panaderia.venderCompuesto(_counterCestas);
       encargado.update(panaderia);
+      analista.update(panaderia);
     });
   }
+
+  void _updateStock(){
+    setState((){
+      ///// Panes
+      _vendidosPan = _vendidosPan + _counterPanes;
+      panaderia.venderProducto(0, _counterPanes);
+
+      // actualizar stock y reiniciar contadores
+      _stockPanes = _stockPanes - _counterPanes;
+      _counterPanes = 0;
+      _totalPrecioPanes = 0;
+
+      ///// Cestas
+      _vendidosCesta = _vendidosCesta + _counterCestas;
+      panaderia.venderProducto(1, _counterCestas);
+
+      // actualizar stock y reiniciar contadores
+      _stockCestas = _stockCestas - _counterCestas;
+      _counterCestas = 0;
+      _totalPrecioCestas = 0;
+
+      encargado.update(panaderia);
+      analista.update(panaderia);
+    });
+  }
+
 
   double getStockPanes(){
     return _stockPanes;
@@ -212,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int getVentasDia(int dia){
     return analista.getVentasDia(dia);
   }
+
 
   int getVendidosPan(){
     return _vendidosPan;
@@ -332,8 +362,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                   onPressed: () {
                     setState((){
-                      _updateStockPanes();
-                      _updateStockCestas();
+                      //_updateStockPanes();
+                      //_updateStockCestas();
+                      _updateStock();
                     });
                     Navigator.push(
                       context,
@@ -361,9 +392,7 @@ class SecondScreen extends StatelessWidget {
 
   final _MyHomePageState myHome;
   // final double stockPanes;
-
   SecondScreen({required this.myHome});
-
 
   @override
   Widget build(BuildContext context) {

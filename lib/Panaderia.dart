@@ -20,6 +20,10 @@ al observador las cantidades
     int _simplesVendidos = 0;
     int _compuestosVendidos = 0;
 
+    int _ultimaVentaPanes = 0;
+    int _ultimaVentaCestas = 0;
+    int _ultimaVenta = 0;
+
     //arrays de productos
     List<Producto> stockSimples = [];
     List<Producto> stockCompuestos = [];
@@ -169,9 +173,25 @@ al observador las cantidades
         print("Se van a vender $cantidad productos de tipo $tipo");
         if (tipo == 0){
             venderSimple(cantidad);
+            _ultimaVentaPanes = cantidad;
         } else { // si tipo == 1
             venderCompuesto(cantidad);
+            _ultimaVentaCestas = cantidad;
         }
+
+
+    }
+
+    int getUltimaVentaPanes(){
+        return _ultimaVentaPanes;
+    }
+
+    int getUltimaVentaCestas(){
+        return _ultimaVentaCestas;
+    }
+
+    int getUltimaVenta(){
+        return _ultimaVenta;
     }
 
 Future<void> run() async{
