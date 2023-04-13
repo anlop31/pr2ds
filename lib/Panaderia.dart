@@ -10,7 +10,6 @@ class Panaderia extends Observable{
 Panaderia : se encarga de instanciar los objetos y notificar
 al observador las cantidades
 */
-    
 
     final Random rand = Random();
 
@@ -19,22 +18,22 @@ al observador las cantidades
     int _nProd = 0;
     int _simplesVendidos = 0;
     int _compuestosVendidos = 0;
-
-    int _ultimaVentaPanes = 0;
-    int _ultimaVentaCestas = 0;
-    int _ultimaVenta = 0;
+    int _stockInicialPanes = 0;
+    int _stockInicialCestas = 0;
 
     //arrays de productos
     List<Producto> stockSimples = [];
     List<Producto> stockCompuestos = [];
 
     //array de suscriptores
-    List<Observer> observadores = [];
+    //List<Observer> _observers = [];
+    // este array no es, ya está en la clase Observable!!!
+    //      y se accede a _observers desde las funciones de Observable
 
     Panaderia() {
         stockSimples = [];
         stockCompuestos = [];
-        observadores = [];
+        //_observers = [];
         _simplesVendidos = 0;
         _compuestosVendidos = 0;
         // inicializarProductos(); // se ejecuta 2 veces, por que?
@@ -57,6 +56,16 @@ al observador las cantidades
         return _compuestosVendidos;
     }
 
+    int getStockInicialPanes(){
+        return _stockInicialPanes;
+    }
+
+    int getStockInicialCestas(){
+        return _stockInicialCestas;
+    }
+
+
+    // Setters
     void setNSimples(int n){
         this._nSimples = n;
     }
@@ -72,7 +81,6 @@ al observador las cantidades
     void setCompuestosVendidos(int n){
         this._compuestosVendidos = n;
     }
-
 
     bool estaCerrada = false;
 
@@ -92,10 +100,13 @@ al observador las cantidades
         _nCompuestos = rand.nextInt(20) + 10;
         _nProd = _nSimples + _nCompuestos;
 
-        //Future.microtask(() {
-            //?????????????????????????????????????????
-        notifyObservers(this);
-        //});
+        _stockInicialPanes = _nSimples;
+        _stockInicialCestas = _nCompuestos;
+
+        // notifyObservers(this);
+        // no hace falta este notify, ya que update se llama
+        // cada vez que hay una venta, y ya sabe reaccionar con la primera
+        // venta
 
         for (int i = 0; i < _nSimples; i++) {
             this.stockSimples.add(ProductoSimple());
@@ -108,16 +119,18 @@ al observador las cantidades
         print("Se inicializa con " + _nSimples.toString() + " productos simples y " + _nCompuestos.toString() + " compuestos. Total: " + _nProd.toString());
     }
 
+    // Manejar suscriptores
     void adscribir(Observer observador) {
         addObserver(observador);
-        observadores.add(observador);
+        //_observers.add(observador);
     }
 
     void quitar(Observer observador) {
-        observadores.remove(observador);
+        //_observers.remove(observador);
+        removeObserver(observador);
     }
 
-
+    // MÉTODOS PARA VENDER
     void venderSimple(int n){
         if (_nSimples <= 0){ // si no quedan simples
             _nSimples = 0;
@@ -136,12 +149,9 @@ al observador las cantidades
             print("No hay suficientes panes");
             }
         }
-        //Future.delayed(const Duration(), () {
-            //setChanged();
-            notifyObservers(this);
-        //});
-    }
 
+        //notifyObservers(this); // mejor se llama en venderProducto(s)
+    }
 
 
     void venderCompuesto(int n){
@@ -162,10 +172,8 @@ al observador las cantidades
                 print("No hay suficientes cestas");
             }
         }
-        //Future.delayed(const Duration(), () {
-            //setChanged();
-            notifyObservers(this);
-        //});
+
+        //notifyObservers(this); // mejor se llama en venderProducto(s)
     } 
 
     void venderProducto(int tipo, int cantidad){
@@ -173,26 +181,24 @@ al observador las cantidades
         print("Se van a vender $cantidad productos de tipo $tipo");
         if (tipo == 0){
             venderSimple(cantidad);
-            _ultimaVentaPanes = cantidad;
         } else { // si tipo == 1
             venderCompuesto(cantidad);
-            _ultimaVentaCestas = cantidad;
         }
 
-
+        notifyObservers(this);
     }
 
-    int getUltimaVentaPanes(){
-        return _ultimaVentaPanes;
+    void venderProductos(int cantidad_panes, int cantidad_cestas){
+        print("Se van a vender $cantidad_panes panes y $cantidad_cestas cestas");
+
+        venderSimple(cantidad_panes);
+        venderCompuesto(cantidad_cestas);
+
+        notifyObservers(this);
     }
 
-    int getUltimaVentaCestas(){
-        return _ultimaVentaCestas;
-    }
 
-    int getUltimaVenta(){
-        return _ultimaVenta;
-    }
+
 
 Future<void> run() async{
     //Cada cierto tiempo (instante) se vende una serie de productos 

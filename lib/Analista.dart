@@ -23,6 +23,9 @@ class Analista extends Observer<Panaderia> {
   int _simplesVendidos = 0;
   int _compuestosVendidos = 0;
 
+  int _stockInicialPanes = 0;
+  int _stockInicialCestas = 0;
+
   String _mensajeSimples = "";
   String _mensajeCompuestos = "";
 
@@ -52,30 +55,36 @@ class Analista extends Observer<Panaderia> {
     panaderia.setCompuestosVendidos(compuestosVendidos);
 
     _suma = 0;
-    //int vendidos = (_nSimples+_nCompuestos) - ( panaderia.getNSimples()+panaderia.getNCompuestos() );
+    int vendidos = (_nSimples+_nCompuestos) - ( panaderia.getNSimples()+panaderia.getNCompuestos() );
     //int vendidos = (o as Panaderia).getUltimaVenta();
-    int vendidos = (o as Panaderia).getUltimaVentaPanes() + (o as Panaderia).getUltimaVentaCestas();
+    //int vendidos = (o as Panaderia).getUltimaVentaPanes() + (o as Panaderia).getUltimaVentaCestas();
 
-    //if(_dia_semana < 7){
-      if (_contador == 0){
-        _contador = _contador + 1;
-      }
-      else{
-        _ventasTotales[_dia_semana] = vendidos;
-        _dia_semana++;
-      }
 
-      _nSimples = panaderia.getNSimples();
-      _nCompuestos = panaderia.getNCompuestos();
-      _simplesVendidos = panaderia.getSimplesVendidos();
-      _compuestosVendidos = panaderia.getCompuestosVendidos();
+    // primera vez que analista recibe datos de Panaderia, cuando ya se ha hecho la primera venta
+    if(_contador == 0){
+       _contador += 1;
+       _stockInicialPanes = (o as Panaderia).getStockInicialPanes();
+       _stockInicialCestas = (o as Panaderia).getStockInicialCestas();
+       vendidos = (_stockInicialPanes + _stockInicialCestas) - (nSimples + nCompuestos);
+    }
 
-      _mensajeSimples = "(Analista) El numero de panes en stock es " + _nSimples.toString()  + " y ya se han vendido " + _simplesVendidos.toString();
-      _mensajeCompuestos = "(Analista) El numero de cestas en stock es " + _nCompuestos.toString() + " y ya se han vendido " + _compuestosVendidos.toString();
+    // si se ha vendido algo, se añade a las ventas
+    if(vendidos > 0) {
+      _ventasTotales[_dia_semana] = vendidos;
+      _dia_semana++;
+    }
 
-      print(_mensajeSimples);
-      print(_mensajeCompuestos);
-    //}
+    // actualizamos los valores de la clase
+    _nSimples = panaderia.getNSimples();
+    _nCompuestos = panaderia.getNCompuestos();
+    _simplesVendidos = panaderia.getSimplesVendidos();
+    _compuestosVendidos = panaderia.getCompuestosVendidos();
+
+    _mensajeSimples = "(Analista) El numero de panes en stock es " + _nSimples.toString()  + " y ya se han vendido " + _simplesVendidos.toString();
+    _mensajeCompuestos = "(Analista) El numero de cestas en stock es " + _nCompuestos.toString() + " y ya se han vendido " + _compuestosVendidos.toString();
+
+    print(_mensajeSimples);
+    print(_mensajeCompuestos);
   }
 
   int getVentasDia(int dia){

@@ -106,10 +106,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Panaderia panaderia = new Panaderia();
 
   _MyHomePageState(){
+    panaderia.adscribir(analista);
     panaderia.inicializarProductos();
+    //inicializarPanaderia();
     _stockPanes = panaderia.getNSimples().toDouble();
     _stockCestas = panaderia.getNCompuestos().toDouble();
-    analista.update(panaderia);
+
   }
 
   void _incrementCounterPanes() {
@@ -151,7 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateStockPanes(){
-    //print("hola");
     setState(() {
       _vendidosPan = _vendidosPan + _counterPanes;
       panaderia.venderProducto(0, _counterPanes);
@@ -160,9 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _counterPanes = 0;
       _totalPrecioPanes = 0;
 
-      //panaderia.venderSimple(_counterPanes);
       encargado.update(panaderia);
-      analista.update(panaderia);
     });
   }
 
@@ -175,17 +174,17 @@ class _MyHomePageState extends State<MyHomePage> {
       _counterCestas = 0;
       _totalPrecioCestas = 0;
 
-      //panaderia.venderCompuesto(_counterCestas);
       encargado.update(panaderia);
-      analista.update(panaderia);
     });
   }
 
   void _updateStock(){
     setState((){
+      panaderia.venderProductos(_counterPanes, _counterCestas);
+
       ///// Panes
       _vendidosPan = _vendidosPan + _counterPanes;
-      panaderia.venderProducto(0, _counterPanes);
+      //panaderia.venderProducto(0, _counterPanes);
 
       // actualizar stock y reiniciar contadores
       _stockPanes = _stockPanes - _counterPanes;
@@ -194,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ///// Cestas
       _vendidosCesta = _vendidosCesta + _counterCestas;
-      panaderia.venderProducto(1, _counterCestas);
+      //panaderia.venderProducto(1, _counterCestas);
 
       // actualizar stock y reiniciar contadores
       _stockCestas = _stockCestas - _counterCestas;
@@ -202,7 +201,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _totalPrecioCestas = 0;
 
       encargado.update(panaderia);
-      analista.update(panaderia);
     });
   }
 
@@ -266,8 +264,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            /*FloatingActionButton(
+              onPressed: () => _inicializarPanes,
+              child: Icon(Icons.visibility_rounded),
+            ),*/
             Column(
               children: [
+
                 Text(
                   'Stock panes: ' + _stockPanes.toString(),
                   style: TextStyle(
@@ -364,7 +367,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState((){
                       //_updateStockPanes();
                       //_updateStockCestas();
-                      _updateStock();
+                      if(_counterPanes == 0 && _counterCestas != 0){
+                        _updateStockCestas(); // se venden solo cestas
+                      }
+                      else if(_counterPanes != 0 && _counterCestas == 0){
+                        _updateStockPanes(); // se venden solo panes
+                      }
+                      else if(_counterPanes != 0 && _counterCestas != 0){
+                        _updateStock(); // se venden panes y cestas
+                      }
+                      //_updateStock();
                     });
                     Navigator.push(
                       context,
