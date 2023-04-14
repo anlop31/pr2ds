@@ -22,7 +22,7 @@ Future<void> main() async{
 
   // Función que marca la panadería como cerrada
   void marcarPanaderiaCerrada() {
-    print('La panadería ha cerrado');
+    //print('La panadería ha cerrado');
     completer.complete(); // Completar el futuro
   }
 
@@ -120,6 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _counterPanes++;
         _totalPrecioPanes = _totalPrecioPanes + _precioPan;
         _dinero = _dinero - _precioPan;
+      } else if ((_dinero - _precioPan) < 0){
+        showPopUpMoney(context);
+      } else {
+        showPopUpStock(context);
       }
     });
   }
@@ -139,6 +143,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _counterCestas++;
         _totalPrecioCestas = _totalPrecioCestas + _precioCesta;
         _dinero = _dinero - _precioCesta;
+      } else if ((_dinero - _precioCesta) < 0){
+        showPopUpMoney(context);
+      } else {
+        showPopUpStock(context);
       }
     });
   }
@@ -247,6 +255,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int getVendidosCesta(){
     return _vendidosCesta;
+  }
+
+  //pop up para cuando no hay suficiente dinero
+  void showPopUpMoney(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("No hay suficiente dinero"),
+          content: Text("No tienes suficiente dinero para comprar este producto."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //pop up para cuando no hay suficiente stock
+  void showPopUpStock(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("No hay suficiente stock"),
+          content: Text("El producto que desea comprar no está disponible."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
 
@@ -410,36 +460,63 @@ class SecondScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SecondScreen'),
+        title: Text('Vista para empleados'),
       ),
       body: Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child:
         Column(
           children: [
-            SizedBox(height: 100,),
-            Text(
-              //'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
-              'Se han vendido: ' + myHome.getVendidosPan().toString() + ' panes.',
-              style: TextStyle(
-                fontSize: 20.0,
+            SizedBox(height: 90,),
+            Container(
+            decoration: BoxDecoration(
+              color: Colors.orangeAccent,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            padding: EdgeInsets.all(9.0),
+            child: Text(
+                ' Ventas ',
+                style: TextStyle(
+                  fontSize: 30.0,
+                ),
               ),
             ),
-            Text(
-              //'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
-              'Se han vendido: ' + myHome.getVendidosCesta().toString() + ' cestas.',
-              style: TextStyle(
-                fontSize: 20.0,
+            SizedBox(height: 20,),
+            Container(
+              child: Column(
+                children: [
+                  Text(
+                    //'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
+                    'Se han vendido: ' + myHome.getVendidosPan().toString() + ' panes.',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                    ),
+                  ),
+                  Text(
+                    //'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
+                    'Se han vendido: ' + myHome.getVendidosCesta().toString() + ' cestas.',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 80,),
-            Text(
-              "Encargado:",
-              style: TextStyle(
-                fontSize: 30.0,
+            SizedBox(height: 50,),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.orangeAccent,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              padding: EdgeInsets.all(9.0),
+              child: Text(
+                ' Encargado ',
+                style: TextStyle(
+                  fontSize: 30.0,
+                ),
               ),
             ),
-            SizedBox(height: 30,),
+            SizedBox(height: 20,),
             Text(
               'Stock panes según el encargado: ' + ( myHome.getStockPanesEncargado() ).toString(),
               style: TextStyle(
@@ -452,31 +529,18 @@ class SecondScreen extends StatelessWidget {
                 fontSize: 20.0,
               ),
             ),
-            SizedBox(height: 80,),
-           /* Text(
-              "Panaderia:",
-              style: TextStyle(
-                fontSize: 30.0,
+            SizedBox(height: 50,),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.orangeAccent,
+                borderRadius: BorderRadius.circular(10.0),
               ),
-            ),
-            SizedBox(height: 30,),
-            Text(
-              'Stock panes panaderia: ' + ( myHome.getPanesPanaderia() ).toString(),
-              style: TextStyle(
-                fontSize: 20.0,
-              ),
-            ),
-            Text(
-              'Stock cestas panaderia: ' + ( myHome.getCestasPanaderia() ).toString(),
-              style: TextStyle(
-                fontSize: 20.0,
-              ),
-            ),
-            SizedBox(height: 30,),*/
-            Text(
-              'Analista: ',
-              style: TextStyle(
-                fontSize: 30.0,
+              padding: EdgeInsets.all(9.0),
+              child: Text(
+                ' Analista ',
+                style: TextStyle(
+                  fontSize: 30.0,
+                ),
               ),
             ),
             SizedBox(height: 30,),
@@ -485,67 +549,102 @@ class SecondScreen extends StatelessWidget {
               children: [
                 TableRow(
                   children: [
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('L',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('M',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('X',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('J',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('V',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('S',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        border: Border.all(),
+                      ),
                       height: 50,
                       child: Center(
                         child: Text('D',
                           style: TextStyle(
                             fontSize: 20.0,
-                          ),),
+                          ),
+                        ),
                       ),
                     ),
                   ],
