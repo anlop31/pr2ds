@@ -20,48 +20,19 @@ Future<void> main() async{
   panaderia.addObserver(analista);
   panaderia.addObserver(encargado);
 
-  // Función que marca la panadería como cerrada
-  void marcarPanaderiaCerrada() {
-    //print('La panadería ha cerrado');
-    completer.complete(); // Completar el futuro
-  }
-
-  // Configurar un temporizador para marcar un tiempo límite para la panadería
-  Timer(Duration(seconds: 40), marcarPanaderiaCerrada);
-
-  // Ejecutar un proceso mientras la instancia de Future esté activa
-  //do {
-  //await panaderia.run();
-  //encargado.update(panaderia);
-
-  // Comprobar si el futuro ha sido completado y si la panadería sigue abierta
-  //print((await futurePanaderia).estaAbierta());
-  //} while (!completer.isCompleted && (await futurePanaderia).estaAbierta());
-  //print("Ha salido del bucle");
-
 
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.blueGrey,
       ),
       home: const MyHomePage(title: 'Panadería'),
     );
@@ -133,6 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
         _counterPanes--;
         _totalPrecioPanes = _totalPrecioPanes - _precioPan;
         _dinero = _dinero + _precioPan;
+      } else {
+        _counterPanes = 0;
       }
     });
   }
@@ -156,6 +129,8 @@ class _MyHomePageState extends State<MyHomePage> {
         _counterCestas--;
         _totalPrecioCestas = _totalPrecioCestas - _precioCesta;
         _dinero = _dinero + _precioCesta;
+      } else {
+        _counterCestas = 0;
       }
     });
   }
@@ -299,6 +274,22 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _comprar(){
+    setState((){
+      //_updateStockPanes();
+      //_updateStockCestas();
+      if(_counterPanes == 0 && _counterCestas != 0){
+        _updateStockCestas(); // se venden solo cestas
+      }
+      else if(_counterPanes != 0 && _counterCestas == 0){
+        _updateStockPanes(); // se venden solo panes
+      }
+      else if(_counterPanes != 0 && _counterCestas != 0){
+        _updateStock(); // se venden panes y cestas
+      }
+      //_updateStock();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -306,141 +297,66 @@ class _MyHomePageState extends State<MyHomePage> {
     // by the _incrementCounter method above.
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,
+          style: TextStyle(
+            color: Colors.white,
+          ),),
       ),
-      body: Center(
-
-
-        child: Column(
+      body:
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/fondo.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        child: Center(
+          child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            /*FloatingActionButton(
-              onPressed: () => _inicializarPanes,
-              child: Icon(Icons.visibility_rounded),
-            ),*/
-            Column(
-              children: [
-
-                Text(
-                  'Stock panes: ' + _stockPanes.toString(),
-                  style: TextStyle(
-                    fontSize: 30.0,
-                  ),
+            ElevatedButton(
+              child: Text(
+                  'Acceso para empleados',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
                 ),
-                Image.asset('assets/pan.jpeg', width: 155, height: 180,),
-
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Cantidad: ',
-                      ),
-                      SizedBox(width: 15),
-                      FloatingActionButton(
-                        onPressed: _decrementCounterPanes,
-                        child: Icon(Icons.remove),
-                      ),
-                      SizedBox(width: 15),
-                      Text(
-                        _counterPanes.toString(),
-                      ),
-                      SizedBox(width: 15),
-                      FloatingActionButton(
-                        onPressed: _incrementCounterPanes,
-                        child: Icon(Icons.add),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 15,),
-                Text(
-                  'Total euros: ' + _totalPrecioPanes.toStringAsFixed(2) + '€',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                  ),
-                ),
-              ],
+              ),
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(Size(200, 80)),
+                // Puedes ajustar el valor de altura (60) a tus necesidades
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SecondScreen(myHome: this)),
+                );
+              },
             ),
-            SizedBox(height: 40),
-            Column(
-              children: [
-                Text(
-                  'Stock cestas: ' + _stockCestas.toString(),
-                  style: TextStyle(
-                    fontSize: 30.0,
-                  ),
-                ),
-                Image.asset('assets/cesta.jpeg', width: 180, height: 180,),
-                Center(
-                  child :Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Cantidad: ',
-                      ),
-                      SizedBox(width: 15),
-                      FloatingActionButton(
-                        onPressed: _decrementCounterCestas,
-                        child: Icon(Icons.remove),
-                      ),
-                      SizedBox(width: 15),
-                      Text(
-                        _counterCestas.toString(),
-                      ),
-                      SizedBox(width: 15),
-                      FloatingActionButton(
-                        onPressed: _incrementCounterCestas,
-                        child: Icon(Icons.add),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 15,),
-                Text(
-                  'Total euros: ' + _totalPrecioCestas.toStringAsFixed(2) + '€',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(width: 50,),
-                Text(
-                  'Dinero: ' + _dinero.toStringAsFixed(2),
-                ),
-                SizedBox(width: 50,),
-                ElevatedButton(
-                  onPressed: () {
-                    setState((){
-                      //_updateStockPanes();
-                      //_updateStockCestas();
-                      if(_counterPanes == 0 && _counterCestas != 0){
-                        _updateStockCestas(); // se venden solo cestas
-                      }
-                      else if(_counterPanes != 0 && _counterCestas == 0){
-                        _updateStockPanes(); // se venden solo panes
-                      }
-                      else if(_counterPanes != 0 && _counterCestas != 0){
-                        _updateStock(); // se venden panes y cestas
-                      }
-                      //_updateStock();
-                    });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SecondScreen(myHome: this)),
-                    );
-                  },
-                  child: Text('Comprar'),
-                ),
-              ],
-            ),
+            SizedBox(height: 50,),
+            ElevatedButton(
+              child: Text(
+                  'Acceso para clientes',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
 
+                ),
+              ),
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(Size(200, 80)),
+                // Puedes ajustar el valor de altura (60) a tus necesidades
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ThirdScreen(myHome: this)),
+                );
+              },
+            ),
           ],
         ),
-
+        ),
       ),
 
     );
@@ -460,9 +376,14 @@ class SecondScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vista para empleados'),
+        title: Text('Vista para empleados',),
       ),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.orangeAccent,
+        ),
+      child:
+      Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child:
         Column(
@@ -470,7 +391,7 @@ class SecondScreen extends StatelessWidget {
             SizedBox(height: 90,),
             Container(
             decoration: BoxDecoration(
-              color: Colors.orangeAccent,
+              color: Colors.blueGrey,
               borderRadius: BorderRadius.circular(10.0),
             ),
             padding: EdgeInsets.all(9.0),
@@ -478,6 +399,7 @@ class SecondScreen extends StatelessWidget {
                 ' Ventas ',
                 style: TextStyle(
                   fontSize: 30.0,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -505,7 +427,7 @@ class SecondScreen extends StatelessWidget {
             SizedBox(height: 50,),
             Container(
               decoration: BoxDecoration(
-                color: Colors.orangeAccent,
+                color: Colors.blueGrey,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               padding: EdgeInsets.all(9.0),
@@ -513,6 +435,7 @@ class SecondScreen extends StatelessWidget {
                 ' Encargado ',
                 style: TextStyle(
                   fontSize: 30.0,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -532,7 +455,7 @@ class SecondScreen extends StatelessWidget {
             SizedBox(height: 50,),
             Container(
               decoration: BoxDecoration(
-                color: Colors.orangeAccent,
+                color: Colors.blueGrey,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               padding: EdgeInsets.all(9.0),
@@ -540,6 +463,7 @@ class SecondScreen extends StatelessWidget {
                 ' Analista ',
                 style: TextStyle(
                   fontSize: 30.0,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -551,7 +475,7 @@ class SecondScreen extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -559,13 +483,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('L',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -573,13 +498,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('M',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -587,13 +513,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('X',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -601,13 +528,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('J',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -615,13 +543,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('V',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -629,13 +558,14 @@ class SecondScreen extends StatelessWidget {
                         child: Text('S',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent,
+                        color: Colors.blueGrey,
                         border: Border.all(),
                       ),
                       height: 50,
@@ -643,6 +573,7 @@ class SecondScreen extends StatelessWidget {
                         child: Text('D',
                           style: TextStyle(
                             fontSize: 20.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -724,6 +655,181 @@ class SecondScreen extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
+
+
+class ThirdScreen extends StatefulWidget {
+  final _MyHomePageState myHome;
+
+  const ThirdScreen({Key? key, required this.myHome}) : super(key: key);
+
+  @override
+  State<ThirdScreen> createState() => _ThirdScreenState();
+}
+
+class _ThirdScreenState extends State<ThirdScreen>{
+
+  void _decrementCounterCestas(){
+    setState(() {
+      widget.myHome._decrementCounterCestas();
+    });
+  }
+
+  void _incrementCounterCestas(){
+    setState(() {
+      widget.myHome._incrementCounterCestas();
+    });
+  }
+
+  void _decrementCounterPanes(){
+    setState(() {
+      widget.myHome._decrementCounterPanes();
+    });
+  }
+
+  void _incrementCounterPanes(){
+    setState(() {
+      widget.myHome._incrementCounterPanes();
+    });
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //final _MyHomePageState myHome = widget.myHome;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Vista para clientes'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.orangeAccent,
+        ),
+        child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            /*FloatingActionButton(
+              onPressed: () => _inicializarPanes,
+              child: Icon(Icons.visibility_rounded),
+            ),*/
+            Column(
+              children: [
+
+                Text(
+                  'Stock panes: ' + widget.myHome._stockPanes.toString(),
+                  style: TextStyle(
+                    fontSize: 30.0,
+                  ),
+                ),
+                Image.asset('assets/pan.jpeg', width: 155, height: 180,),
+
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Cantidad: ',
+                      ),
+                      SizedBox(width: 15),
+                      FloatingActionButton(
+                        onPressed: _decrementCounterPanes,
+                        child: Icon(Icons.remove),
+                      ),
+                      SizedBox(width: 15),
+                      Text(
+                        widget.myHome._counterPanes.toString(),
+                      ),
+                      SizedBox(width: 15),
+                      FloatingActionButton(
+                        onPressed: _incrementCounterPanes,
+                        child: Icon(Icons.add),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 15,),
+                Text(
+                  'Total euros: ' + widget.myHome._totalPrecioPanes.toStringAsFixed(2) + '€',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 40),
+            Column(
+              children: [
+                Text(
+                  'Stock cestas: ' + widget.myHome._stockCestas.toString(),
+                  style: TextStyle(
+                    fontSize: 30.0,
+                  ),
+                ),
+                Image.asset('assets/cesta.jpeg', width: 180, height: 180,),
+                Center(
+                  child :Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Cantidad: ',
+                      ),
+                      SizedBox(width: 15),
+                      FloatingActionButton(
+                        onPressed: _decrementCounterCestas,
+                        child: Icon(Icons.remove),
+                      ),
+                      SizedBox(width: 15),
+                      Text(
+                        widget.myHome._counterCestas.toString(),
+                      ),
+                      SizedBox(width: 15),
+                      FloatingActionButton(
+                        onPressed: _incrementCounterCestas,
+                        child: Icon(Icons.add),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 15,),
+                Text(
+                  'Total euros: ' + widget.myHome._totalPrecioCestas.toStringAsFixed(2) + '€',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                SizedBox(width: 50,),
+                Text(
+                  'Dinero: ' + widget.myHome._dinero.toStringAsFixed(2),
+                ),
+                SizedBox(width: 50,),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.myHome._comprar();
+                  },
+                  child: Text('Comprar'),
+                ),
+              ],
+            ),
+
+          ],
+        ),
+
+      ),
+      ),
+    );
+  }
+}
+
+
+
