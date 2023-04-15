@@ -42,6 +42,19 @@ class Encargado implements Observer<Panaderia> {
         print(_mensajeCompuestos);
     }
 
+    int getNSimples(){
+        return _nSimples;
+    }
+    int getNCompuestos(){
+        return _nCompuestos;
+    }
+    int getSimplesVendidos(){
+        return _simplesVendidos;
+    }
+    int getCompuestosVendidos(){
+        return _compuestosVendidos;
+    }
+
     String getStock(){
         return ("Supervisor --> " + _mensajeSimples + _mensajeCompuestos);
     }
