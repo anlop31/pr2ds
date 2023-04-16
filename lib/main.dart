@@ -26,7 +26,6 @@ Future<void> main() async{
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,15 +40,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -79,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState(){
     panaderia.adscribir(analista);
     panaderia.inicializarProductos();
-    //inicializarPanaderia();
     _stockPanes = panaderia.getNSimples().toDouble();
     _stockCestas = panaderia.getNCompuestos().toDouble();
 
@@ -167,7 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ///// Panes
       _vendidosPan = _vendidosPan + _counterPanes;
-      //panaderia.venderProducto(0, _counterPanes);
 
       // actualizar stock y reiniciar contadores
       _stockPanes = _stockPanes - _counterPanes;
@@ -176,7 +164,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ///// Cestas
       _vendidosCesta = _vendidosCesta + _counterCestas;
-      //panaderia.venderProducto(1, _counterCestas);
 
       // actualizar stock y reiniciar contadores
       _stockCestas = _stockCestas - _counterCestas;
@@ -276,8 +263,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _comprar(){
     setState((){
-      //_updateStockPanes();
-      //_updateStockCestas();
       if(_counterPanes == 0 && _counterCestas != 0){
         _updateStockCestas(); // se venden solo cestas
       }
@@ -287,14 +272,11 @@ class _MyHomePageState extends State<MyHomePage> {
       else if(_counterPanes != 0 && _counterCestas != 0){
         _updateStock(); // se venden panes y cestas
       }
-      //_updateStock();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title,
@@ -324,7 +306,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all(Size(200, 80)),
-                // Puedes ajustar el valor de altura (60) a tus necesidades
               ),
               onPressed: () {
                 Navigator.push(
@@ -345,7 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               style: ButtonStyle(
                 minimumSize: MaterialStateProperty.all(Size(200, 80)),
-                // Puedes ajustar el valor de altura (60) a tus necesidades
               ),
               onPressed: () {
                 Navigator.push(
@@ -369,7 +349,6 @@ class _MyHomePageState extends State<MyHomePage> {
 class SecondScreen extends StatelessWidget {
 
   final _MyHomePageState myHome;
-  // final double stockPanes;
   SecondScreen({required this.myHome});
 
   @override
@@ -408,14 +387,12 @@ class SecondScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    //'Se han vendido: ' + ( (myHome.getStockInicialPanes() - myHome.getStockPanes()).toInt() ).toString() + ' panes.',
                     'Se han vendido: ' + myHome.getVendidosPan().toString() + ' panes.',
                     style: TextStyle(
                       fontSize: 20.0,
                     ),
                   ),
                   Text(
-                    //'Se han vendido: ' + ( (myHome.getStockInicialCestas() - myHome.getStockCestas()).toInt() ).toString() + ' cestas.',
                     'Se han vendido: ' + myHome.getVendidosCesta().toString() + ' cestas.',
                     style: TextStyle(
                       fontSize: 20.0,
@@ -696,13 +673,15 @@ class _ThirdScreenState extends State<ThirdScreen>{
     });
   }
 
+  void _comprar(){
+    setState(() {
+      widget.myHome._comprar();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //final _MyHomePageState myHome = widget.myHome;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Vista para clientes'),
@@ -715,10 +694,6 @@ class _ThirdScreenState extends State<ThirdScreen>{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            /*FloatingActionButton(
-              onPressed: () => _inicializarPanes,
-              child: Icon(Icons.visibility_rounded),
-            ),*/
             Column(
               children: [
 
@@ -815,7 +790,7 @@ class _ThirdScreenState extends State<ThirdScreen>{
                 SizedBox(width: 50,),
                 ElevatedButton(
                   onPressed: () {
-                    widget.myHome._comprar();
+                    _comprar();
                   },
                   child: Text('Comprar'),
                 ),
